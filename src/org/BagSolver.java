@@ -8,17 +8,20 @@ public class BagSolver {
 
 	public void startProblem(List<Gene> itens, List<String> populations, int maxWeight) {
 		boolean continueRun = true;
-		int count = 0;
+		int count = 1;
 
+		List<Gene> itensMochila = computeFitness(populations, itens, maxWeight);
+		List<Gene> best = getBestPopulation(itensMochila);
+		List<Gene> newPopulation = generateNewPopulation(best);
+
+		
 		while (continueRun) {
 
-			List<Gene> itensMochila = computeFitness(populations, itens, maxWeight);
-			List<Gene> best = getBestPopulation(itensMochila);
-			List<Gene> newPopulation = generateNewPopulation(best);
+			itensMochila = computeFitness(maxWeight, newPopulation, itens);
+			best = getBestPopulation(itensMochila);
+			newPopulation = generateNewPopulation(best);
 
-			
-			
-			continueRun = continueRunning(count, best.get(0).getPonto());
+			continueRun = continueRunning(count, best.get(0), itens);
 			count++;
 		}
 	}
@@ -113,16 +116,15 @@ public class BagSolver {
 		List<Gene> newPopulation = new ArrayList<Gene>();
 		newPopulation.addAll(best);
 
-		String gene1 = best.get(0).getId().substring(0, 3);
-		String gene2 = best.get(1).getId().substring(0, 3);
+		String gene1 = "";
+		String  gene2 = "";
 
-		for (int i = 0; i < 3; i++) {
-			gene1 = gene1 + new Random().nextInt(2);
-
+		for (int i = 0; i < 6; i++) {
+			gene1 = gene1 + best.get(new Random().nextInt(2)).getId().charAt(i);
 		}
 
-		for (int i = 0; i < 3; i++) {
-			gene2 = gene2 + new Random().nextInt(2);
+		for (int i = 0; i < 6; i++) {
+			gene2 = gene2 + best.get(new Random().nextInt(2)).getId().charAt(i);
 
 		}
 
@@ -131,13 +133,35 @@ public class BagSolver {
 		return newPopulation;
 	}
 	
-	private boolean continueRunning(int count, int ponto) {
+	private boolean continueRunning(int count, Gene gene, List<Gene> itens) {
 		
-		if(count == 10 || ponto == 39) {
+		if(count == 100 || gene.getPonto() >= 40) {
+			
+			System.out.println("O sistema rodou " + count + " vezes e a melhor pontuação foi de " + gene.getPonto());
+			System.out.println("##################################################################");
+			System.out.println("População: " + gene.getId());
+			System.out.println("Pontos: " + gene.getPonto());
+			System.out.println("Peso: " + gene.getPeso());
+			System.out.println("Itens: " + showItens(gene, itens));
+			System.out.println("##################################################################");
 			return false;
 		}
 		
 		return true;
+	}
+
+
+	private String showItens(Gene gene, List<Gene> itens) {
+		String itensSelecionados = "| ";
+		int i = 0;
+		
+		for (char c : gene.getId().toCharArray()) {
+			if (c == '1') {
+				itensSelecionados = itensSelecionados + itens.get(i).getId() + " | ";
+			}
+			i++;
+		}
+		return itensSelecionados;
 	}
 
 }
