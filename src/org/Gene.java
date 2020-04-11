@@ -12,6 +12,11 @@ public class Gene {
 		this.ponto = ponto;
 	}
 
+	public Gene(String id) {
+		super();
+		this.id = id;
+	}
+
 	public Gene() {
 	}
 
